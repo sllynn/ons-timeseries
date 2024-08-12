@@ -24,15 +24,6 @@ s.mount('https://www.ons.gov.uk', HTTPAdapter(max_retries=retries))
 
 # COMMAND ----------
 
-# l4oj
-# grossvalueaddedgva
-
-ts_ids = dbutils.widgets.get("time_series_ids").split(",")
-urls = [f"https://www.ons.gov.uk/economy/grossvalueaddedgva/timeseries/l4oj/wgdp/data" for id in ts_ids]
-urls
-
-# COMMAND ----------
-
 ts_ids = dbutils.widgets.get("time_series_ids").split(",")
 urls = [f"https://www.ons.gov.uk/economy/inflationandpriceindices/timeseries/{id.strip().lower()}/mm23/data" for id in ts_ids]
 urls
