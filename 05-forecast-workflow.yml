@@ -1,0 +1,44 @@
+resources:
+  jobs:
+    ONS_index_forecast:
+      name: ONS index forecast
+      tasks:
+        - task_key: acquire_data
+          notebook_task:
+            notebook_path: /Workspace/Users/stuart.lynn@databricks.com/customers/BoE/00-data-acquisition
+            base_parameters:
+              time_series_ids: D7BT,DKC6,DK9J,D7F5,D7BU
+            source: WORKSPACE
+          existing_cluster_id: 0808-104808-r1mo84te
+        - task_key: reshape_clean
+          depends_on:
+            - task_key: acquire_data
+          notebook_task:
+            notebook_path: /Workspace/Users/stuart.lynn@databricks.com/customers/BoE/01-reshape-clean
+            source: WORKSPACE
+          existing_cluster_id: 0808-104808-r1mo84te
+        - task_key: latest_data
+          depends_on:
+            - task_key: reshape_clean
+          notebook_task:
+            notebook_path: /Workspace/Users/stuart.lynn@databricks.com/customers/BoE/02-latest-for-forecast
+            source: WORKSPACE
+          existing_cluster_id: 0808-104808-r1mo84te
+        - task_key: train_model
+          depends_on:
+            - task_key: latest_data
+          notebook_task:
+            notebook_path: /Workspace/Users/stuart.lynn@databricks.com/customers/BoE/03a-train-arima-model
+            base_parameters:
+              ts_freq: months
+            source: WORKSPACE
+          existing_cluster_id: 0808-104808-r1mo84te
+      tags:
+        removeAfter: 2024-12-31
+      queue:
+        enabled: true
+      parameters:
+        - name: catalog
+          default: stuart
+        - name: schema
+          default: ts
